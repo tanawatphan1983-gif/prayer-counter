@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#b7791f"><link rel="apple-touch-icon" href="icon-192.png"><meta name="mobile-web-app-capable" content="yes"><title>นับรอบสวดมนต์อัตโนมัติ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbf7ee;--card:#fff;--ink:#2b2418;--mute:#7a6f5c;--gold:#b7791f;--gold2:#e9b44c;--line:#eadfc8;--ok:#2f855a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16130d;--card:#221d14;--ink:#f3ead7;--mute:#a79c86;--gold:#e9b44c;--gold2:#b7791f;--line:#3a3222;--ok:#68d391}}
+:root[data-theme="dark"]{--bg:#16130d;--card:#221d14;--ink:#f3ead7;--mute:#a79c86;--gold:#e9b44c;--gold2:#b7791f;--line:#3a3222;--ok:#68d391}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans Thai',system-ui,sans-serif}
+main{max-width:480px;margin:0 auto;padding:16px 16px 40px}
+h1{font-size:19px;margin:4px 0 2px;text-align:center}
+.sub{font-size:13px;color:var(--mute);text-align:center;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.ring{position:relative;width:230px;height:230px;margin:0 auto}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.big{font-size:64px;font-weight:700;line-height:1;color:var(--gold)}
+.lbl{font-size:13px;color:var(--mute);margin-top:4px}
+.tm{font-size:15px;font-weight:600;margin-top:6px;font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;margin-top:14px}
+button{font-family:inherit;font-size:16px;border:0;border-radius:14px;padding:14px;cursor:pointer;font-weight:600}
+.p{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#fff;flex:1}
+.s{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.on{background:var(--ok);color:#fff}
+.set{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px;font-size:14px}
+input[type=number],input[type=text]{font-family:inherit;font-size:15px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input[type=number]{width:72px;text-align:center}
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-h button{padding:6px 14px;font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.dow{font-size:12px;color:var(--mute);padding:4px 0}
+.d{aspect-ratio:1;border-radius:10px;border:1px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;background:transparent;color:var(--ink);padding:0;font-weight:400}
+.d b{font-size:11px;color:#fff;background:var(--gold);border-radius:8px;padding:0 6px;margin-top:2px}
+.d.t{border-color:var(--gold)}
+.d.sel{background:var(--line)}
+.log{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.log:last-child{border:0}
+.log .n{font-weight:700;color:var(--gold);min-width:28px}
+.log .tt{font-variant-numeric:tabular-nums;white-space:nowrap}
+.log input{flex:1;min-width:0;padding:6px 8px;font-size:13px}
+.log button{padding:4px 10px;font-size:14px;background:transparent;color:var(--mute)}
+.empty{color:var(--mute);font-size:14px;text-align:center;padding:10px}
+.sum{font-size:13px;color:var(--mute);margin-bottom:6px}
+.vs{font-size:13px;color:var(--mute);margin-top:6px;min-height:18px}
+</style>
+</head>
+<body>
+<main>
+<h1>🪷 นับรอบสวดมนต์อัตโนมัติ</h1>
+<div class="sub">ธัมมจักกัปปวัตตนสูตร · บันทึกวัน-เวลาทุกรอบลงปฏิทิน</div>
+
+<div class="card">
+  <div class="ring">
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="var(--line)" stroke-width="6"/><circle id="arc" cx="50" cy="50" r="45" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" stroke-dasharray="282.74" stroke-dashoffset="282.74"/></svg>
+    <div class="c"><div class="big" id="today">0</div><div class="lbl">รอบวันนี้<span id="goalTxt" hidden></span></div><div class="tm" id="tm">พร้อมเริ่ม</div></div>
+  </div>
+  <div class="row">
+    <button class="s" id="undo" aria-label="ย้อนกลับ">↩︎</button>
+    <button class="p" id="tap">＋ นับ 1 รอบ</button>
+  </div>
+  <div class="row"><button class="s on" id="auto" style="flex:1;background:var(--card);color:var(--ink);border:1px solid var(--line)">▶ เริ่มโหมดอัตโนมัติ</button></div>
+  <input type="hidden" id="dur" value="12">
+  <div class="set"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="vad"> ตรวจจับเสียงสวดด้วยไมโครโฟน</label></div><div class="vs" id="vs"></div>
+  <div class="set"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="asr"> ยืนยันว่าเป็นบทธัมมจักกัปปวัตตนสูตร (ถอดเสียง)</label></div><div class="vs" id="as"></div>
+  <div class="set"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="rec"> บันทึกเสียงผู้สวด (เก็บในเครื่อง แยกตามรอบ)</label></div><div class="vs" id="rs"></div>
+  <input type="hidden" id="goal" value="7">
+  <div class="sub" style="margin:10px 0 0">โหมดอัตโนมัติ: ติ๊ก "ยืนยันว่าเป็นบทธัมมจักกัปปวัตตนสูตร" แล้วเริ่มสวด แอปจะนับ 1 รอบก็ต่อเมื่อฟังพบครบทุกช่วงของบทตามลำดับจนจบ (6 ช่วง) ถ้าสวดไม่จบหรือข้ามช่วงจะไม่นับ ถ้านับไม่ทันกด "นับ 1 รอบ" เองได้ ควรเปิดหน้าจอค้างไว้</div>
+</div>
+
+<div class="card">
+  <div class="cal-h"><button class="s" id="prev">‹</button><strong id="mon"></strong><button class="s" id="next">›</button></div>
+  <div class="grid" id="cal"></div>
+</div>
+
+<div class="card">
+  <strong id="dayT"></strong>
+  <div class="sum" id="daySum"></div>
+  <div id="list"></div>
+</div>
+</main>
+<script>
+(function(){
+var KEY='dhammajak-v1',TH=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'],DW=['อา','จ','อ','พ','พฤ','ศ','ส'];
+var S={logs:[],dur:12,goal:7,auto:null,vad:false,asr:true,rec:false};
+try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);if(o&&o.logs)S=Object.assign(S,o)}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var $=function(i){return document.getElementById(i)};
+var now=new Date(),vy=now.getFullYear(),vm=now.getMonth(),sel=dk(now);
+function dk(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+function p2(n){return(n<10?'0':'')+n}
+function tstr(t){var d=new Date(t);return p2(d.getHours())+':'+p2(d.getMinutes())+':'+p2(d.getSeconds())}
+function countOn(k){return S.logs.filter(function(l){return dk(new Date(l.t))===k}).length}
+function beep(){try{var c=new (window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=660;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.25,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+1.2);o.start();o.stop(c.currentTime+1.2)}catch(e){}try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+function add(t,silent){S.logs.push({t:t,note:''});S.logs.sort(function(a,b){return a.t-b.t});save();if(!silent)beep();var k=dk(new Date(t));if(k===dk(new Date())){sel=k}render();rcd.cut(t)}
+var wl=null;
+function lock(on){try{if(on&&navigator.wakeLock){navigator.wakeLock.request('screen').then(function(l){wl=l}).catch(function(){})}else if(wl){wl.release();wl=null}}catch(e){}}
+var KW=['เอวัม','สุตัง','พาราณะสิยัง','อิสิปะตะเน','มิคะทาเย','ปัญจะวัคคิเย','ภิกขะเว','ภิกขู','มัชฌิมา','ปะฏิปะทา','ตะถาคะเตนะ','อะริยะสัจจัง','ทุกขัง','ทุกขา','สัมมาทิฏฐิ','สัมมาสังกัปโป','สัมมาวาจา','สัมมากัมมันโต','สัมมาอาชีโว','สัมมาวายาโม','สัมมาสะติ','สัมมาสะมาธิ','ชาติปิ','ชะราปิ','พยาธิปิ','มะระณัมปิ','ตัณหา','นิโรโธ','สะมุทะโย','โกณฑัญโญ','ธัมมะจักกัง','อะนุตตะรัง','สัมมาสัมโพธิง','อัฏฐังคิโก'];
+var MAP={'ศ':'ส','ษ':'ส','ซ':'ส','ฏ':'ต','ฎ':'ด','ถ':'ท','ฐ':'ท','ธ':'ท','ฑ':'ท','ฒ':'ท','ภ':'พ','ฆ':'ค','ข':'ค','ฃ':'ค','ฅ':'ค','ณ':'น','ฬ':'ล','ฌ':'ช','ฉ':'ช'};
+function sk(t){var o='',i,c;for(i=0;i<t.length;i++){c=t.charAt(i);if(c<'\u0E01'||c>'\u0E2E')continue;o+=MAP[c]||c}return o}
+var KS=KW.map(sk);
+function has(s,k){if(s.indexOf(k)>=0)return true;if(k.length<5)return false;var h=0,i;for(i=0;i<k.length-1;i++)if(s.indexOf(k.substr(i,2))>=0)h++;return h/(k.length-1)>=0.8}
+var STG=[['เอวัม','สุตัง','พาราณะสิยัง','อิสิปะตะเน','ปัญจะวัคคิเย'],['มัชฌิมา','ปะฏิปะทา','ตะถาคะเตนะ'],['สัมมาทิฏฐิ','สัมมาสังกัปโป','สัมมาวาจา','สัมมากัมมันโต','สัมมาอาชีโว','สัมมาวายาโม','สัมมาสะติ','สัมมาสะมาธิ'],['ชาติปิ','ชะราปิ','พยาธิปิ','มะระณัมปิ','ทุกขัง'],['ตัณหา','นิโรโธ','สะมุทะโย'],['อัญญาสิ','โกณฑัญโญ']].map(function(g){return g.map(sk)});
+var asr={on:false,err:'',rec:null,hits:[],last:'',want:false,stage:0,lastHit:0,note:0,
+ start:function(){var a=this,SR=window.SpeechRecognition||window.webkitSpeechRecognition;a.err='';a.want=true;a.hits=[];a.stage=0;a.lastHit=0;
+  if(!SR){a.err='เบราว์เซอร์นี้ไม่รองรับการถอดเสียง (ใช้ Chrome บน Android) · ใช้โหมดเวลาปกติแทน';a.want=false;return}
+  if(a.rec)return;
+  var r=new SR();r.lang='th-TH';r.continuous=true;r.interimResults=true;
+  r.onstart=function(){a.on=true};
+  r.onresult=function(e){var t='',i;for(i=e.resultIndex;i<e.results.length;i++)t+=e.results[i][0].transcript+' ';a.feed(t)};
+  r.onerror=function(e){if(e.error==='not-allowed'||e.error==='service-not-allowed'||e.error==='language-not-supported'){a.err='ใช้การถอดเสียงไม่ได้ ('+e.error+') · ใช้โหมดเวลาปกติแทน';a.want=false;a.on=false}};
+  r.onend=function(){a.on=false;a.rec=null;if(a.want&&!a.err)setTimeout(function(){if(a.want&&!a.rec)a.start()},300)};
+  a.rec=r;try{r.start()}catch(x){a.rec=null}},
+ stop:function(){this.want=false;try{this.rec&&this.rec.stop()}catch(e){}this.on=false;this.rec=null},
+ feed:function(t){this.last=t;var s=sk(t),n=Date.now(),i,j,g,m,c0=0,hit=false;
+  for(i=0;i<KS.length;i++){if(has(s,KS[i])){this.hits.push({t:n,k:i});hit=true}}
+  for(j=0;j<STG[0].length;j++){if(has(s,STG[0][j]))c0++}
+  if(this.stage>=2&&c0>=2)this.stage=0;
+  while(this.stage<STG.length){g=STG[this.stage];m=false;for(j=0;j<g.length;j++){if(has(s,g[j])){m=true;break}}if(!m)break;this.stage++;hit=true}
+  if(hit)this.lastHit=n},
+ ended:function(){var n=Date.now();if(this.stage>0&&this.stage<STG.length&&n-this.lastHit>240000)this.reset();return this.stage>=STG.length},
+ reset:function(){this.stage=0;this.hits=[];this.lastHit=0},
+ ok:function(){var n=Date.now(),seen={},c=0;this.hits=this.hits.filter(function(h){return n-h.t<40000});this.hits.forEach(function(h){if(!seen[h.k]){seen[h.k]=1;c++}});return c>=3}};
+var DB=null;
+function idb(cb){if(DB)return cb(DB);try{var q=indexedDB.open('dhammajak-rec',1);q.onupgradeneeded=function(){q.result.createObjectStore('rec')};q.onsuccess=function(){DB=q.result;cb(DB)};q.onerror=function(){cb(null)}}catch(e){cb(null)}}
+function putRec(k,b,cb){idb(function(d){if(!d){cb(false);return}try{var tx=d.transaction('rec','readwrite');tx.objectStore('rec').put(b,k);tx.oncomplete=function(){cb(true)};tx.onerror=function(){cb(false)}}catch(e){cb(false)}})}
+function getRec(k,cb){idb(function(d){if(!d){cb(null);return}try{var q=d.transaction('rec').objectStore('rec').get(k);q.onsuccess=function(){cb(q.result||null)};q.onerror=function(){cb(null)}}catch(e){cb(null)}})}
+function delRec(k){idb(function(d){if(!d)return;try{d.transaction('rec','readwrite').objectStore('rec').delete(k)}catch(e){}})}
+var rcd={on:false,busy:false,err:'',st:null,mr:null,ch:[],
+ seg:function(){var m=this;m.ch=[];try{m.mr=new MediaRecorder(m.st);m.mr.ondataavailable=function(e){if(e.data&&e.data.size)m.ch.push(e.data)};m.mr.start(1000)}catch(e){m.err='อุปกรณ์นี้บันทึกเสียงไม่ได้';m.on=false}},
+ start:function(){var m=this;if(m.on||m.busy)return;m.err='';
+  if(!(window.MediaRecorder&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){m.err='อุปกรณ์นี้ไม่รองรับการบันทึกเสียง';return}
+  m.busy=true;navigator.mediaDevices.getUserMedia({audio:true}).then(function(s){m.st=s;m.busy=false;m.on=true;m.seg()}).catch(function(){m.err='ไม่ได้รับสิทธิ์ไมโครโฟน · บันทึกเสียงไม่ได้';m.busy=false})},
+ stop:function(){var m=this;m.on=false;try{if(m.mr){m.mr.onstop=null;if(m.mr.state!=='inactive')m.mr.stop()}}catch(e){}try{m.st&&m.st.getTracks().forEach(function(t){t.stop()})}catch(e){}m.st=null;m.mr=null;m.ch=[]},
+ cut:function(t){var m=this,mr=m.mr;if(!m.on||!mr||mr.state==='inactive')return;var ty=mr.mimeType;
+  mr.onstop=function(){var b=new Blob(m.ch,{type:ty});putRec(t,b,function(ok){if(ok){var l=S.logs.filter(function(x){return x.t===t})[0];if(l){l.rec=true;save();render()}}});if(m.on)m.seg()};
+  try{mr.stop()}catch(e){}}};
+var lastT=Date.now();
+var mic={on:false,busy:false,err:'',ctx:null,an:null,st:null,buf:null,last:0,floor:0.01,
+ start:function(){var m=this;if(m.on||m.busy)return;m.busy=true;m.err='';
+  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){m.err='อุปกรณ์นี้ไม่รองรับไมโครโฟน · ใช้โหมดเวลาปกติแทน';m.busy=false;return}
+  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false}}).then(function(s){
+   m.st=s;m.ctx=new (window.AudioContext||window.webkitAudioContext)();if(m.ctx.resume)m.ctx.resume();
+   var src=m.ctx.createMediaStreamSource(s);m.an=m.ctx.createAnalyser();m.an.fftSize=1024;src.connect(m.an);
+   m.buf=new Float32Array(m.an.fftSize);m.on=true;m.busy=false;m.last=Date.now();
+  }).catch(function(){m.err='ไม่ได้รับสิทธิ์ไมโครโฟน · ใช้โหมดเวลาปกติแทน';m.busy=false})},
+ stop:function(){var m=this;try{m.st&&m.st.getTracks().forEach(function(t){t.stop()});m.ctx&&m.ctx.close()}catch(e){}m.on=false;m.busy=false;m.st=null;m.ctx=null;m.an=null},
+ sample:function(){if(!this.on)return;this.an.getFloatTimeDomainData(this.buf);var s=0,i;for(i=0;i<this.buf.length;i++)s+=this.buf[i]*this.buf[i];var r=Math.sqrt(s/this.buf.length);
+  if(r<this.floor)this.floor=this.floor*0.9+r*0.1;else this.floor=this.floor*0.9995+r*0.0005;
+  if(r>Math.max(0.02,this.floor*3))this.last=Date.now()},
+ heard:function(){return Date.now()-this.last<5000}};
+function tick(){
+  var n0=Date.now(),dt=n0-lastT;lastT=n0;mic.sample();
+  var hear=mic.on&&mic.heard();
+  var ok=!(S.vad&&mic.on&&!hear)&&!(S.asr&&asr.on&&!asr.ok());
+  if(S.auto&&!ok&&dt<1500)S.auto+=dt;
+  $('as').textContent=!S.asr?'':(asr.err?asr.err:(!asr.on?'จะเริ่มฟังเมื่อกดเริ่มโหมดอัตโนมัติ':(asr.ok()?'✅ ตรวจพบบทสวด · กำลังนับเวลา':'⏸ ยังไม่พบบทธัมมจักกัปปวัตตนสูตร · หยุดนับเวลา')+(asr.last?' · ได้ยิน: '+asr.last.slice(-40):'')));
+  $('vs').textContent=!S.vad?'':(mic.err?mic.err:(!mic.on?(mic.busy?'กำลังขอสิทธิ์ใช้ไมโครโฟน…':'จะเปิดไมโครโฟนเมื่อกดเริ่มโหมดอัตโนมัติ'):(hear?'🎙 ได้ยินเสียงสวด · กำลังนับเวลา':'⏸ ไม่ได้ยินเสียง · หยุดนับเวลาชั่วคราว')));
+  $('rs').textContent=!S.rec?'':(rcd.err?rcd.err:(rcd.on?'🔴 กำลังบันทึกเสียง · จะเก็บไว้ที่รอบที่นับ':'จะเริ่มบันทึกเมื่อกดเริ่มโหมดอัตโนมัติ'));
+  if(S.asr&&asr.on&&!asr.err)$('as').textContent+=' · ช่วงของบท '+asr.stage+'/'+STG.length+(Date.now()-asr.note<8000?' · ⚠ รอบก่อนสั้นเกินไป ไม่นับ':'');
+  if(S.auto){var n=Date.now(),el=Math.floor((n-S.auto)/1000);
+    if(S.asr&&asr.on&&asr.ended()){if(el>=240)add(n);else asr.note=n;S.auto=n;asr.reset();save()}
+    $('arc').style.strokeDashoffset=0;$('tm').textContent='รอบนี้ '+p2(Math.floor(el/60))+':'+p2(el%60);
+  }else{$('arc').style.strokeDashoffset=282.74;$('tm').textContent='พร้อมเริ่ม'}
+}
+function render(){
+  var tc=countOn(dk(new Date()));$('today').textContent=tc;$('goalTxt').textContent=S.goal;$('dur').value=S.dur;$('goal').value=S.goal;$('vad').checked=!!S.vad;$('asr').checked=!!S.asr;$('rec').checked=!!S.rec;
+  $('auto').textContent=S.auto?'■ หยุดโหมดอัตโนมัติ':'▶ เริ่มโหมดอัตโนมัติ';
+  $('mon').textContent=TH[vm]+' '+(vy+543);
+  var h='';DW.forEach(function(x){h+='<div class="dow">'+x+'</div>'});
+  var f=new Date(vy,vm,1).getDay(),n=new Date(vy,vm+1,0).getDate(),i;
+  for(i=0;i<f;i++)h+='<div></div>';
+  for(i=1;i<=n;i++){var k=vy+'-'+(vm+1)+'-'+i,c=countOn(k);
+    h+='<button class="d'+(k===dk(new Date())?' t':'')+(k===sel?' sel':'')+'" data-k="'+k+'">'+i+(c?'<b>'+c+'</b>':'')+'</button>'}
+  $('cal').innerHTML=h;
+  var p=sel.split('-'),items=S.logs.map(function(l,ix){return{l:l,ix:ix}}).filter(function(o){return dk(new Date(o.l.t))===sel});
+  $('dayT').textContent='วันที่ '+p[2]+' '+TH[p[1]-1]+' '+(+p[0]+543);
+  $('daySum').textContent='สวดแล้ว '+items.length+' รอบ';
+  var L='';items.forEach(function(o,j){L+='<div class="log"><span class="n">#'+(j+1)+'</span><span class="tt">'+tstr(o.l.t)+'</span><input type="text" placeholder="บันทึก/โน้ต" value="'+(o.l.note||'').replace(/"/g,'&quot;')+'" data-i="'+o.ix+'">'+(o.l.rec?'<button data-play="'+o.l.t+'" aria-label="ฟังเสียง">🎧</button>':'')+'<button data-del="'+o.ix+'" aria-label="ลบ">✕</button></div>'});
+  $('list').innerHTML=L||'<div class="empty">ยังไม่มีบันทึกในวันนี้</div>';
+  tick();
+}
+$('tap').onclick=function(){add(Date.now())};
+$('undo').onclick=function(){if(S.logs.length){var k=dk(new Date());for(var i=S.logs.length-1;i>=0;i--){if(dk(new Date(S.logs[i].t))===k){var y=S.logs.splice(i,1)[0];if(y&&y.rec)delRec(y.t);break}}save();render()}};
+$('auto').onclick=function(){if(S.auto){S.auto=null;lock(false);asr.stop();rcd.stop()}else{S.auto=Date.now();lock(true);if(S.vad)mic.start();if(S.asr)asr.start();if(S.rec)rcd.start()}save();render()};
+$('vad').onchange=function(){S.vad=this.checked;if(S.vad){S.asr=false;asr.stop();asr.err='';mic.start()}else{mic.stop();mic.err=''}save();render()};
+$('asr').onchange=function(){S.asr=this.checked;if(S.asr){S.vad=false;mic.stop();mic.err='';if(S.auto)asr.start()}else{asr.stop();asr.err=''}save();render()};
+$('rec').onchange=function(){S.rec=this.checked;if(!S.rec){rcd.stop();rcd.err=''}else if(S.auto)rcd.start();save();render()};
+$('dur').onchange=function(){var v=Math.max(1,Math.min(180,+this.value||12));S.dur=v;if(S.auto)S.auto=Date.now();save();render()};
+$('goal').onchange=function(){S.goal=Math.max(1,Math.min(999,+this.value||7));save();render()};
+$('prev').onclick=function(){vm--;if(vm<0){vm=11;vy--}render()};
+$('next').onclick=function(){vm++;if(vm>11){vm=0;vy++}render()};
+$('cal').onclick=function(e){var b=e.target.closest('[data-k]');if(b){sel=b.getAttribute('data-k');render()}};
+$('list').onclick=function(e){var b=e.target.closest('[data-del]');if(b){var x=S.logs.splice(+b.getAttribute('data-del'),1)[0];if(x&&x.rec)delRec(x.t);save();render();return}
+ var p=e.target.closest('[data-play]');if(p){var row=p.parentNode,old=row.querySelector('audio');if(old){old.remove();return}getRec(+p.getAttribute('data-play'),function(bl){if(!bl)return;var a=document.createElement('audio');a.controls=true;a.src=URL.createObjectURL(bl);a.style.width='100%';row.appendChild(a);a.play().catch(function(){})})}};
+$('list').onchange=function(e){var i=e.target.getAttribute('data-i');if(i!==null&&S.logs[+i]){S.logs[+i].note=e.target.value;save()}};
+document.addEventListener('visibilitychange',function(){if(!document.hidden){if(S.auto)lock(true);tick()}});
+setInterval(tick,250);render();
+})();
+</script>
+<script>if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})</script>
+</body>
+</html>
